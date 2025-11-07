@@ -131,35 +131,32 @@ window.addEventListener('resize',()=>{
   mCanvas.height=window.innerHeight;
 });
 
-/* ---------- Tetris ---------- */
+<!-- ---------- Tetris ---------- -->
 const c=document.getElementById('tetris-canvas');
 const ctx=c.getContext('2d');
 const COL=10,ROW=20,BLOCK=30;
 const board=Array.from({length:ROW},()=>Array(COL).fill(0));
 const PIECES=[
-  [[1,1,1,1]],               // I
-  [[1,1],[1,1]],             // O
-  [[0,1,0],[1,1,1]],         // T
-  [[1,1,0],[0,1,1]],         // S
-  [[0,1,1],[1,1,0]],         // Z
-  [[1,0,0],[1,1,1]],         // L
-  [[0,0,1],[1,1,1]]          // J
+  [[1,1,1,1]],
+  [[1,1],[1,1]],
+  [[0,1,0],[1,1,1]],
+  [[1,1,0],[0,1,1]],
+  [[0,1,1],[1,1,0]],
+  [[1,0,0],[1,1,1]],
+  [[0,0,1],[1,1,1]]
 ];
 let piece,px,py,score=0,dropCounter=0,lastTime=0;
 
 function randPiece(){
   const id=Math.floor(Math.random()*PIECES.length);
-  return {
-    shape:PIECES[id],
-    color:'#00ffff'
-  };
+  return {shape:PIECES[id],color:'#00ffff'};
 }
 function collide(){
   for(let y=0;y<piece.shape.length;y++){
     for(let x=0;x<piece.shape[y].length;x++){
       if(!piece.shape[y][x])continue;
       const nx=px+x,ny=py+y;
-      if(nx<0||nx>=COL||ny>=ROW||board[ny][nx])return true;
+      if(nx<0||nx>=COL||ny>=ROW||(ny>=0&&board[ny][nx]))return true;
     }
   }
   return false;
@@ -170,16 +167,30 @@ function merge(){
       if(val)board[py+y][px+x]=piece.color;
     });
   });
+  // sweep full lines
+  for(let y=ROW-1;y>=0;y--){
+    if(board[y].every(v=>v)){
+      board.splice(y,1);
+      board.unshift(Array(COL).fill(0));
+      score+=100;
+      updateScore();
+      y++;
+    }
+  }
 }
 function rotate(){
   const shape=piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse());
-  const old={...piece};
+  const old={shape:piece.shape};
   piece.shape=shape;
-  if(collide())piece=old;
+  if(collide())piece.shape=old.shape;
 }
 function drop(){
   py++;
-  if(collide()){py--;merge;reset;}
+  if(collide()){
+    py--;
+    merge();
+    reset();
+  }
 }
 function reset(){
   piece=randPiece();
@@ -193,7 +204,6 @@ function reset(){
 }
 function draw(){
   ctx.clearRect(0,0,c.width,c.height);
-  // draw board
   board.forEach((row,y)=>{
     row.forEach((val,x)=>{
       if(val){
@@ -204,7 +214,6 @@ function draw(){
       }
     });
   });
-  // draw piece
   ctx.fillStyle=piece.color;
   piece.shape.forEach((row,y)=>{
     row.forEach((val,x)=>{
@@ -228,17 +237,6 @@ function update(time=0){
   requestAnimationFrame(update);
 }
 function updateScore(){document.getElementById('score').textContent=score;}
-function sweep(){
-  outer:for(let y=ROW-1;y>=0;y--){
-    if(board[y].every(v=>v)){
-      board.splice(y,1);
-      board.unshift(Array(COL).fill(0));
-      score+=100;
-      updateScore();
-      y++;
-    }
-  }
-}
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'){px--;if(collide())px++;}
   if(e.key==='ArrowRight'){px++;if(collide())px--;}
@@ -246,9 +244,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowUp')rotate();
 });
 reset();update();
-// fix merge/sweep timing
-const _merge=merge;
-merge=()=>{_merge();sweep();};
+<!-- ---------- End Tetris ---------- -->
 
 /* ---------- Modal controls ---------- */
 document.getElementById('openTetris').onclick=()=>document.getElementById('tetrisModal').classList.add('show');
