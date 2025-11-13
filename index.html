@@ -15,7 +15,7 @@ body{
   color:#fff;
   font-family:"Segoe UI",sans-serif;
   height:100vh;
-  overflow:hidden;
+  overflow:auto;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -28,28 +28,57 @@ main{
   align-items:center;
   justify-content:center;
   width:100%;
-  height:100%;
+  padding:20px;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  width: 100%;
 }
 .image-container {
-  max-width: 90%;
-  max-height: 90%;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--bg);
+  aspect-ratio: 1;
+}
+.image-container:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.7);
 }
 .display-image {
   width: 100%;
-  height: auto;
-  max-height: 90vh;
+  height: 100%;
   object-fit: contain;
   display: block;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 </style>
 </head>
 <body>
 <main>
-  <div class="image-container">
-    <img src="Image.png" alt="Display Image" class="display-image">
+  <div class="gallery">
+    <div class="image-container">
+      <img src="Image.png" alt="Image 1" class="display-image">
+    </div>
+    <div class="image-container">
+      <img src="Image2.png" alt="Image 2" class="display-image">
+    </div>
+    <div class="image-container">
+      <img src="Image3.png" alt="Image 3" class="display-image">
+    </div>
+    <div class="image-container">
+      <img src="Image4.png" alt="Image 4" class="display-image">
+    </div>
   </div>
 </main>
 </body>
