@@ -1,125 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>bayaty</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        :root {
-            --bg: #0d0d0d;
-            --accent: #00ffff;
-            --glow: #00ffff33;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background: var(--bg);
-            color: #fff;
-            font-family: "Segoe UI", sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        canvas {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-        }
-        main {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 2rem;
-        }
-        h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--accent), #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% {
-                text-shadow: 0 0 10px var(--glow), 0 0 20px var(--glow);
-            }
-            50% {
-                text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
-            }
-        }
-        p {
-            margin-top: 1rem;
-            font-size: 1.2rem;
-            opacity: .8;
-        }
-        .links {
-            margin-top: 2rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .links a {
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            padding: .75rem 1.5rem;
-            border-radius: 2rem;
-            text-decoration: none;
-            transition: .3s;
-        }
-        .links a:hover {
-            background: var(--accent);
-            color: var(--bg);
-            box-shadow: 0 0 20px var(--accent);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>bayaty</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#0d0d0d;
+  --accent:#00ffff;
+  --glow:#00ffff33;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:#fff;
+  font-family:"Segoe UI",sans-serif;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+canvas{position:absolute;inset:0;z-index:0}
+main{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  padding:2rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:90%;
+}
+.image-container {
+  max-width: 80%;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+.display-image {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+h1{
+  font-size:clamp(3rem,10vw,6rem);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  background:linear-gradient(135deg,var(--accent),#fff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{text-shadow:0 0 10px var(--glow),0 0 20px var(--glow)}
+  50%{text-shadow:0 0 20px var(--accent),0 0 40px var(--accent)}
+}
+p{margin-top:1rem;font-size:1.2rem;opacity:.8}
+.links{
+  margin-top:2rem;
+  display:flex;
+  gap:1rem;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.links a,.links button{
+  color:var(--accent);
+  border:2px solid var(--accent);
+  padding:.75rem 1.5rem;
+  border-radius:2rem;
+  text-decoration:none;
+  background:transparent;
+  cursor:pointer;
+  transition:.3s;
+}
+.links a:hover,.links button:hover{
+  background:var(--accent);
+  color:var(--bg);
+  box-shadow:0 0 20px var(--accent);
+}
+/* ---- Tetris Modal ---- */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+.modal.show{display:flex}
+.modal-content{
+  background:#111;
+  border:2px solid var(--accent);
+  border-radius:1rem;
+  padding:1rem;
+  box-shadow:0 0 30px var(--accent);
+}
+#tetris-canvas{display:block;margin:0 auto}
+.score{
+  text-align:center;margin-top:.5rem;font-size:1rem;color:var(--accent)
+}
+</style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
-    <main>
-        <h1>bayaty</h1>
-        <p>Digital sandbox & creative corner</p>
-        <div class="links">
-            <a href="#about">About</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
-        </div>
-    </main>
+<canvas id="matrix"></canvas>
+<main>
+  <h1>bayaty</h1>
+  <p>Digital sandbox & creative corner</p>
 
-    <script>
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+  <div class="image-container">
+    <img src="Image.png" alt="Display Image" class="display-image">
+  </div>
 
-        const cols = Math.floor(canvas.width / 20);
-        const drops = Array(cols).fill(0);
-        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  <div class="links">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <button id="openTetris">Play Tetris</button>
+  </div>
+</main>
 
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(13,13,13,.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ffff';
-            ctx.font = '16px monospace';
-            drops.forEach((y, i) => {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * 20, y * 20);
-                if (y * 20 > canvas.height && Math.random() > .975) drops[i] = 0;
-                drops[i]++;
-            });
-        }
-        setInterval(drawMatrix, 50);
+<div class="modal" id="tetrisModal">
+  <div class="modal-content">
+    <canvas id="tetris-canvas" width="300" height="600"></canvas>
+    <div class="score">Score: <span id="score">0</span></div>
+    <button id="closeTetris">Close</button>
+  </div>
+</div>
 
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
+<script>
+/* ---------- Matrix Rain (original) ---------- */
+const mCanvas=document.getElementById('matrix');
+const mCtx=mCanvas.getContext('2d');
+mCanvas.width=window.innerWidth;
+mCanvas.height=window.innerHeight;
+const cols=Math.floor(mCanvas.width/20);
+const drops=Array(cols).fill(0);
+const chars='01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+function drawMatrix(){
+  mCtx.fillStyle='rgba(13,13,13,.05)';
+  mCtx.fillRect(0,0,mCanvas.width,mCanvas.height);
+  mCtx.fillStyle='#00ffff';
+  mCtx.font='16px monospace';
+  drops.forEach((y,i)=>{
+    const text=chars[Math.floor(Math.random()*chars.length)];
+    mCtx.fillText(text,i*20,y*20);
+    if(y*20>mCanvas.height&&Math.random()>.975)drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix,50);
+window.addEventListener('resize',()=>{
+  mCanvas.width=window.innerWidth;
+  mCanvas.height=window.innerHeight;
+});
+
+<!-- ---------- Tetris ---------- -->
+const c=document.getElementById('tetris-canvas');
+const ctx=c.getContext('2d');
+const COL=10,ROW=20,BLOCK=30;
+const board=Array.from({length:ROW},()=>Array(COL).fill(0));
+const PIECES=[
+  [[1,1,1,1]],
+  [[1,1],[1,1]],
+  [[0,1,0],[1,1,1]],
+  [[1,1,0],[0,1,1]],
+  [[0,1,1],[1,1,0]],
+  [[1,0,0],[1,1,1]],
+  [[0,0,1],[1,1,1]]
+];
+let piece,px,py,score=0,dropCounter=0,lastTime=0;
+
+function randPiece(){
+  const id=Math.floor(Math.random()*PIECES.length);
+  return {shape:PIECES[id],color:'#00ffff'};
+}
+function collide(){
+  for(let y=0;y<piece.shape.length;y++){
+    for(let x=0;x<piece.shape[y].length;x++){
+      if(!piece.shape[y][x])continue;
+      const nx=px+x,ny=py+y;
+      if(nx<0||nx>=COL||ny>=ROW||(ny>=0&&board[ny][nx]))return true;
+    }
+  }
+  return false;
+}
+function merge(){
+  piece.shape.forEach((row,y)=>{
+    row.forEach((val,x)=>{
+      if(val)board[py+y][px+x]=piece.color;
+    });
+  });
+  // sweep full lines
+  for(let y=ROW-1;y>=0;y--){
+    if(board[y].every(v=>v)){
+      board.splice(y,1);
+      board.unshift(Array(COL).fill(0));
+      score+=100;
+      updateScore();
+      y++;
+    }
+  }
+}
+function rotate(){
+  const shape=piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse());
+  const old={shape:piece.shape};
+  piece.shape=shape;
+  if(collide())piece.shape=old.shape;
+}
+function drop(){
+  py++;
+  if(collide()){
+    py--;
+    merge();
+    reset();
+  }
+}
+function reset(){
+  piece=randPiece();
+  px=Math.floor(COL/2)-1;
+  py=0;
+  if(collide()){
+    board.forEach(r=>r.fill(0));
+    score=0;
+    updateScore();
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  board.forEach((row,y)=>{
+    row.forEach((val,x)=>{
+      if(val){
+        ctx.fillStyle=val;
+        ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
+        ctx.strokeStyle='#000';
+        ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
+      }
+    });
+  });
+  ctx.fillStyle=piece.color;
+  piece.shape.forEach((row,y)=>{
+    row.forEach((val,x)=>{
+      if(val){
+        ctx.fillRect((px+x)*BLOCK,(py+y)*BLOCK,BLOCK,BLOCK);
+        ctx.strokeStyle='#000';
+        ctx.strokeRect((px+x)*BLOCK,(py+y)*BLOCK,BLOCK,BLOCK);
+      }
+    });
+  });
+}
+function update(time=0){
+  const delta=time-lastTime;
+  lastTime=time;
+  dropCounter+=delta;
+  if(dropCounter>500){
+    drop();
+    dropCounter=0;
+  }
+  draw();
+  requestAnimationFrame(update);
+}
+function updateScore(){document.getElementById('score').textContent=score;}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'){px--;if(collide())px++;}
+  if(e.key==='ArrowRight'){px++;if(collide())px--;}
+  if(e.key==='ArrowDown')drop();
+  if(e.key==='ArrowUp')rotate();
+});
+reset();update();
+<!-- ---------- End Tetris ---------- -->
+
+/* ---------- Modal controls ---------- */
+document.getElementById('openTetris').onclick=()=>document.getElementById('tetrisModal').classList.add('show');
+document.getElementById('closeTetris').onclick=()=>document.getElementById('tetrisModal').classList.remove('show');
+</script>
 </body>
 </html>
