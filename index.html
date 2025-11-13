@@ -22,7 +22,32 @@ body{
   justify-content:center;
 }
 canvas{position:absolute;inset:0;z-index:0}
-main{position:relative;z-index:1;text-align:center;padding:2rem}
+main{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  padding:2rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:90%;
+}
+.image-container {
+  max-width: 80%;
+  margin: 1rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+.display-image {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
 h1{
   font-size:clamp(3rem,10vw,6rem);
   letter-spacing:.1em;
@@ -88,6 +113,11 @@ p{margin-top:1rem;font-size:1.2rem;opacity:.8}
 <main>
   <h1>bayaty</h1>
   <p>Digital sandbox & creative corner</p>
+
+  <div class="image-container">
+    <img src="Image.png" alt="Display Image" class="display-image">
+  </div>
+
   <div class="links">
     <a href="#about">About</a>
     <a href="#projects">Projects</a>
