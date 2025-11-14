@@ -14,11 +14,12 @@ body{
   background:var(--bg);
   color:#fff;
   font-family:"Segoe UI",sans-serif;
-  height:100vh;
+  min-height:100vh;
   overflow:auto;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:20px;
 }
 main{
   position:relative;
@@ -28,7 +29,6 @@ main{
   align-items:center;
   justify-content:center;
   width:100%;
-  padding:20px;
 }
 .gallery {
   display: grid;
@@ -43,10 +43,13 @@ main{
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: var(--bg);
-  aspect-ratio: 16/9;
   width: 100%;
   cursor: pointer;
   position: relative;
+  /* Fixed height instead of aspect-ratio which might be causing issues */
+  height: 300px;
+  min-height: 200px;
+  /* Ensure proper content sizing and centering */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,21 +59,36 @@ main{
   box-shadow: 0 0 35px rgba(0, 255, 255, 0.7);
 }
 .display-image {
+  /* Fixed positioning for proper display */
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
 }
 .image-error {
-  color: #ff4444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #ff6666;
   padding: 1rem;
   text-align: center;
-  font-size: 0.9rem;
 }
-.debug-info {
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.error-text {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.error-hint {
   font-size: 0.7rem;
-  color: #999;
-  margin-top: 5px;
+  color: #aaa;
 }
 
 /* Modal Styles */
@@ -124,16 +142,16 @@ main{
 <main>
   <div class="gallery">
     <div class="image-container" data-src="Image1.png">
-      <img src="Image1.png" alt="Image 1" class="display-image" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'image-error\\'>Image not found: Image1.png<div class=\\'debug-info\\'>Check if file exists in same folder</div></div>';">
+      <img src="Image1.png" alt="Image 1" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image1.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
     </div>
     <div class="image-container" data-src="Image2.png">
-      <img src="Image2.png" alt="Image 2" class="display-image" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'image-error\\'>Image not found: Image2.png<div class=\\'debug-info\\'>Check if file exists in same folder</div></div>';">
+      <img src="Image2.png" alt="Image 2" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image2.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
     </div>
     <div class="image-container" data-src="Image3.png">
-      <img src="Image3.png" alt="Image 3" class="display-image" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'image-error\\'>Image not found: Image3.png<div class=\\'debug-info\\'>Check if file exists in same folder</div></div>';">
+      <img src="Image3.png" alt="Image 3" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image3.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
     </div>
     <div class="image-container" data-src="Image4.png">
-      <img src="Image4.png" alt="Image 4" class="display-image" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'image-error\\'>Image not found: Image4.png<div class=\\'debug-info\\'>Check if file exists in same folder</div></div>';">
+      <img src="Image4.png" alt="Image 4" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image4.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
     </div>
   </div>
 </main>
@@ -153,9 +171,20 @@ const modalImg = document.getElementById('modalImage');
 const closeModal = document.querySelector('.close-modal');
 const imageContainers = document.querySelectorAll('.image-container');
 
+// Set initial opacity to 0 for fade-in effect
+document.querySelectorAll('.display-image').forEach(img => {
+  img.style.opacity = '0';
+  img.style.transition = 'opacity 0.3s ease';
+});
+
 // Add click events to all image containers
 imageContainers.forEach(container => {
   container.addEventListener('click', function() {
+    // Skip if there's an error
+    if (this.querySelector('.image-error')) {
+      return;
+    }
+
     const imgSrc = this.getAttribute('data-src');
     modalImg.src = imgSrc;
     modal.classList.add('show');
