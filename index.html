@@ -46,10 +46,8 @@ main{
   width: 100%;
   cursor: pointer;
   position: relative;
-  /* Fixed height instead of aspect-ratio which might be causing issues */
   height: 300px;
   min-height: 200px;
-  /* Ensure proper content sizing and centering */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,13 +57,14 @@ main{
   box-shadow: 0 0 35px rgba(0, 255, 255, 0.7);
 }
 .display-image {
-  /* Fixed positioning for proper display */
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 .image-error {
   display: flex;
@@ -141,17 +140,23 @@ main{
 <body>
 <main>
   <div class="gallery">
-    <div class="image-container" data-src="Image1.png">
-      <img src="Image1.png" alt="Image 1" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image1.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
+    <div class="image-container" data-src="1.png">
+      <img src="1.png" alt="Image 1" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 1.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
     </div>
-    <div class="image-container" data-src="Image2.png">
-      <img src="Image2.png" alt="Image 2" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image2.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
+    <div class="image-container" data-src="2.png">
+      <img src="2.png" alt="Image 2" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 2.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
     </div>
-    <div class="image-container" data-src="Image3.png">
-      <img src="Image3.png" alt="Image 3" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image3.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
+    <div class="image-container" data-src="3.png">
+      <img src="3.png" alt="Image 3" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 3.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
     </div>
-    <div class="image-container" data-src="Image4.png">
-      <img src="Image4.png" alt="Image 4" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\\'image-error\\'><div class=\\'error-icon\\'>⚠️</div><div class=\\'error-text\\'>Image not found: Image4.png</div><div class=\\'error-hint\\'>Check if file exists in the same folder</div></div>'">
+    <div class="image-container" data-src="4.png">
+      <img src="4.png" alt="Image 4" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 4.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
+    </div>
+    <div class="image-container" data-src="5.png">
+      <img src="5.png" alt="Image 5" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 5.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
+    </div>
+    <div class="image-container" data-src="6.png">
+      <img src="6.png" alt="Image 6" class="display-image" onload="this.style.opacity=1;" onerror="this.onerror=null; this.parentElement.classList.add('error'); this.parentElement.innerHTML='<div class=\'image-error\'><div class=\'error-icon\'>⚠️</div><div class=\'error-text\'>Image not found: 6.png</div><div class=\'error-hint\'>Check if file exists in the same folder</div></div>'">
     </div>
   </div>
 </main>
@@ -170,6 +175,7 @@ const modal = document.getElementById('imageModal');
 const modalImg = document.getElementById('modalImage');
 const closeModal = document.querySelector('.close-modal');
 const imageContainers = document.querySelectorAll('.image-container');
+const images = Array.from(document.querySelectorAll('.image-container')).filter(container => !container.querySelector('.error'));
 
 // Set initial opacity to 0 for fade-in effect
 document.querySelectorAll('.display-image').forEach(img => {
@@ -203,10 +209,44 @@ modal.addEventListener('click', function(e) {
   }
 });
 
-// Close modal when pressing the Escape key
+// Get current index of the displayed image
+function getCurrentImageIndex() {
+  return images.findIndex(container => container.getAttribute('data-src') === modalImg.src.split('/').pop());
+}
+
+// Navigate to next image
+function showNextImage() {
+  const currentIndex = getCurrentImageIndex();
+  if (currentIndex < images.length - 1) {
+    modalImg.src = images[currentIndex + 1].getAttribute('data-src');
+  }
+}
+
+// Navigate to previous image
+function showPreviousImage() {
+  const currentIndex = getCurrentImageIndex();
+  if (currentIndex > 0) {
+    modalImg.src = images[currentIndex - 1].getAttribute('data-src');
+  }
+}
+
+// Handle keyboard navigation
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && modal.classList.contains('show')) {
+  // If modal is not open, handle escape key only
+  if (!modal.classList.contains('show')) {
+    if (e.key === 'Escape') {
+      modal.classList.remove('show');
+    }
+    return;
+  }
+
+  // If modal is open, handle all navigation keys
+  if (e.key === 'Escape') {
     modal.classList.remove('show');
+  } else if (e.key === 'ArrowRight') {
+    showNextImage();
+  } else if (e.key === 'ArrowLeft') {
+    showPreviousImage();
   }
 });
 </script>
